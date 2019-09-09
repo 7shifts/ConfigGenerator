@@ -12,12 +12,14 @@ protocol Template {
   var variableNameToken: String { get }
   var customTypeToken: String { get }
   var bodyToken: String { get }
+  var additionalImportToken: String { get }
 }
 
 extension Template {
   var variableNameToken: String { return "$VARIABLE_NAME_TOKEN" }
   var customTypeToken: String { return "$CUSTOM_TYPE_TOKEN" }
   var bodyToken: String { return "$BODY_TOKEN" }
+  var additionalImportToken: String { return "$ADDITIONAL_IMPORT_TOKEN" }
 }
 
 protocol HeaderTemplate: Template {
@@ -38,6 +40,7 @@ protocol ImplementationTemplate: Template {
 
   var outputImplementationFileName: String { get }
   var implementationImportStatements: String { get }
+  var implementationAdditionalImportStatements: String { get }
   var implementationBody: String { get }
 
   var doubleImplementation: String { get }
@@ -78,6 +81,7 @@ struct ObjectiveCTemplate: HeaderTemplate, ImplementationTemplate {
   var outputImplementationFileName: String { return "\(optionsParser.outputClassDirectory)/\(optionsParser.outputClassName).m" }
 
   var implementationImportStatements: String { return "#import \"\(optionsParser.outputClassName).h\"" }
+  var implementationAdditionalImportStatements: String { return "#import \"\(optionsParser.outputClassName).h\"" }
 
   var implementationBody: String { return "\n\n@implementation \(optionsParser.outputClassName) \n\(bodyToken)\n@end\n" }
 
@@ -98,6 +102,7 @@ struct SwiftTemplate: ImplementationTemplate {
   // MARK: - ImplementationTemplate
 
   var implementationImportStatements: String { return "import Foundation" }
+  var implementationAdditionalImportStatements: String { return "import \(additionalImportToken)\n" }
 
   var outputImplementationFileName: String { return "\(optionsParser.outputClassDirectory)/\(optionsParser.outputClassName).swift" }
 
@@ -114,3 +119,4 @@ struct SwiftTemplate: ImplementationTemplate {
   var urlImplementation: String { return "  static let \(variableNameToken): URL = URL(string: \"\(valueToken)\")!" }
   var customImplementation: String { return "  static let \(variableNameToken): \(customTypeToken) = \(valueToken)" }
 }
+
